@@ -1,0 +1,70 @@
+<html >
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="snakeCanvas" height="1000px" width="1000px">
+<script>
+var canvas = document.getElementById('snakeCanvas');
+var x=100;
+var y=100;
+var snake=new Array();
+var snakeSize=15;
+function init(){
+    for(var i=0;i<5;i++){
+        snake[i]={x:100+i*snakeSize,y:100}
+    }
+}
+function draw() {
+  canvas.getContext('2d').clearRect(0,0,1000,1000);
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+    for(var i=0;i<snake.length;i++){
+        ctx.beginPath();
+        var radius = 10; // Arc radius
+        var startAngle = 0; // Starting point on circle
+        var endAngle = Math.PI*2; // End point on circle
+        ctx.arc(snake[i].x, snake[i].y, radius, startAngle, endAngle);
+        ctx.fill();  
+    }  
+  }
+}
+function input(keyCode) {
+        switch (keyCode) {
+            case 65:
+            case 37: //左边
+                moveSnake(-snakeSize,0);
+                break;
+            case 87:
+            case 38: //上边
+                moveSnake(0,-snakeSize);
+                break;
+            case 68:
+            case 39: //右边
+                moveSnake(snakeSize,0);
+                break;
+            case 83:
+            case 40: //下的
+                moveSnake(0,snakeSize);
+                break;
+        }
+    }
+function moveSnake(m,n){
+    for(var i=snake.length-1;i>0;i--){
+        snake[i].x=snake[i-1].x;
+        snake[i].y=snake[i-1].y;
+    }
+    snake[0].x+=m;
+    snake[0].y+=n;
+}
+document.onkeydown = function (event) {
+        var event = event || window.event;
+        input(event.keyCode);
+    };
+init();
+draw();
+setInterval(draw,10);
+</script>
+
+</body>
+</html>
