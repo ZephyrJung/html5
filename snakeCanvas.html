@@ -10,6 +10,7 @@ var x=100;
 var y=100;
 var snake=new Array();
 var snakeSize=15;
+var direction={x:-1,y:0};
 function init(){
     for(var i=0;i<5;i++){
         snake[i]={x:100+i*snakeSize,y:100}
@@ -33,26 +34,31 @@ function input(keyCode) {
         switch (keyCode) {
             case 65:
             case 37: //左边
-                moveSnake(-snakeSize,0);
+                direction.x=-1;
+                direction.y=0;
                 break;
             case 87:
             case 38: //上边
-                moveSnake(0,-snakeSize);
+                direction.x=0;
+                direction.y=-1;
                 break;
             case 68:
             case 39: //右边
-                moveSnake(snakeSize,0);
+                direction.x=1;
+                direction.y=0;
                 break;
             case 83:
             case 40: //下的
-                moveSnake(0,snakeSize);
+                direction.x=0;
+                direction.y=1;
                 break;
         }
+        moveSnake(direction.x,direction.y);
     }
 function moveSnake(m,n){
     for(var i=snake.length-1;i>0;i--){
-        snake[i].x=snake[i-1].x;
-        snake[i].y=snake[i-1].y;
+        snake[i].x=snake[i-1].x-snakeSize*m;
+        snake[i].y=snake[i-1].y-snakeSize*n;
     }
     snake[0].x+=m;
     snake[0].y+=n;
@@ -63,7 +69,11 @@ document.onkeydown = function (event) {
     };
 init();
 draw();
-setInterval(draw,10);
+function run(){
+    draw();
+    moveSnake(direction.x,direction.y);
+}
+setInterval(run,50);
 </script>
 
 </body>
