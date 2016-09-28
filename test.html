@@ -1,0 +1,33 @@
+<html >
+<head>
+<meta charset="utf-8" />
+</head>
+<body>
+<canvas id="snakeCanvas" height="1000px" width="1000px">
+<script>
+var canvas = document.getElementById('snakeCanvas');
+var R=100;
+var X=120;
+var Y=120;
+//极坐标画圆
+function draw() {
+  canvas.getContext('2d').clearRect(0,0,1000,1000);
+  if (canvas.getContext){
+    var ctx = canvas.getContext('2d');
+    ctx.beginPath();
+    
+    for(var i=0;i<Math.PI*2;i+=0.01){
+        ctx.moveTo(R*Math.cos(i-0.01)+X,R*Math.sin(i-0.01)+Y);
+        ctx.lineTo(R*Math.cos(i)+X,R*Math.sin(i)+Y)
+        ctx.stroke(); 
+    }
+           
+  }
+}
+
+draw();
+
+</script>
+
+</body>
+</html>
