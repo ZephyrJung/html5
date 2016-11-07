@@ -5,159 +5,130 @@
 <body>
 <canvas id="snakeCanvas" height="1000px" width="1000px">
 <script>
-window.requestAnimationFrame =
-    window.requestAnimationFrame ||
-    window.mozRequestAnimationFrame ||
-    window.webkitRequestAnimationFrame ||
-    window.msRequestAnimationFrame ||(function() {
-    var lastTime = window.getTime();
-    var frame = 1000 / 60;
-    return function(func) {
-        var _id = setTimeout(function() {
-            lastTime = window.getTime();
-            func(lastTime);
-        }, Math.max(0, lastTime + frame - window.getTime()));
-        return _id;
-    };
-}());
+
 
 var canvas = document.getElementById('snakeCanvas');
-var x=100;
-var y=100;
-var snake=new Array();
-var snakeSize=15;
-var speed={x:-snakeSize,y:0};
-var currDirect=0;
-var nextDirect=0;
 
-var appleX=Math.pow(Math.random(),3)*1000;
-var appleY=Math.pow(Math.random(),3)*1000;
-
-var JR=0;//极坐标半径
-var JX=0;//极坐标X偏移量
-var JY=0;//极坐标Y偏移量
-function init(){
-    for(var i=0;i<6;i++){
-        snake[i]={x:100+i*snakeSize,y:100}
-    }
-}
-function draw() {
-  canvas.getContext('2d').clearRect(0,0,1000,1000);
-  if (canvas.getContext){
-    var ctx = canvas.getContext('2d');
-    for(var i=0;i<snake.length;i++){
-        ctx.beginPath();
-        ctx.lineTo(snake[i].x,snake[i].y);
-        var radius = 15; // Arc radius
-        var startAngle = 0; // Starting point on circle
-        var endAngle = Math.PI*2; // End point on circle
-        ctx.arc(snake[i].x, snake[i].y, radius, startAngle, endAngle);
-        ctx.stroke();  
-        
-    } 
-    ctx.beginPath();
-    ctx.fillStyle='red'
-    var radius = 15; // Arc radius
-    var startAngle = 0; // Starting point on circle
-    var endAngle = Math.PI*2; // End point on circle
-    ctx.arc(appleX,appleY, radius, startAngle, endAngle);
-    ctx.fill();
-    // if(eatApple(snake[0].x,snake[0].y,appleX,appleY,radius)){
-    //     newApple();  
-    // }
-    // snake[snake.length]={x:,y:}
-  }
-}
-function input(keyCode) {
+var Snake={
+    head:{x:100,y:100},
+    direct:0,
+    body:new Array(),
+    size:15,
+    speed:{x:-15,y:0},
+    apple:{
+        x:Math.pow(Math.random(),3)*1000,
+        y:Math.pow(Math.random(),3)*1000,
+    },
+    init:function(){
+        for(var i=0;i<6;i++){
+            Snake.body[i]={x:100+i*Snake.size,y:100}
+        }
+        window.document.onkeydown = function (event) {
+            var event = event || window.event;
+            Snake.input(event.keyCode);
+        }
+        window.requestAnimationFrame =
+            window.requestAnimationFrame ||
+            window.mozRequestAnimationFrame ||
+            window.webkitRequestAnimationFrame ||
+            window.msRequestAnimationFrame ||(function() {
+            var lastTime = window.getTime();
+            var frame = 1000 / 60;
+            return function(func) {
+                var _id = setTimeout(function() {
+                    lastTime = window.getTime();
+                    func(lastTime);
+                }, Math.max(0, lastTime + frame - window.getTime()));
+                return _id;
+            };
+        }());
+        requestAnimationFrame(Snake.animate);
+    },
+    draw:function(){
+        canvas.getContext('2d').clearRect(0,0,1000,1000);
+        if (canvas.getContext){
+            var ctx = canvas.getContext('2d');
+            for(var i=0;i<Snake.body.length;i++){
+                ctx.beginPath();
+                ctx.lineTo(Snake.body[i].x,Snake.body[i].y);
+                var radius = 15; // Arc radius
+                var startAngle = 0; // Starting point on circle
+                var endAngle = Math.PI*2; // End point on circle
+                ctx.arc(Snake.body[i].x, Snake.body[i].y, radius, startAngle, endAngle);
+                ctx.stroke();  
+            } 
+            ctx.beginPath();
+            ctx.fillStyle='red'
+            var radius = 15; // Arc radius
+            var startAngle = 0; // Starting point on circle
+            var endAngle = Math.PI*2; // End point on circle
+            ctx.arc(Snake.apple.x,Snake.apple.y, radius, startAngle, endAngle);
+            ctx.fill();
+        }
+    },
+    input:function(keyCode){
         switch (keyCode) {
             case 87:
             case 38: //上边
-                if(currDirect!=0&&currDirect!=1){
-                    currDirect=0;
-                    speed.x=0;
-                    speed.y=-snakeSize;
+                if(Snake.direct!=0&&Snake.direct!=1){
+                    Snake.direct=0;
+                    Snake.speed.x=0;
+                    Snake.speed.y=-Snake.size;
                 }
                 break;
             case 83:
             case 40: //下的
-                if(currDirect!=0&&currDirect!=1){
-                    currDirect=1;
-                    speed.x=0;
-                    speed.y=snakeSize;
+                if(Snake.direct!=0&&Snake.direct!=1){
+                    Snake.direct=1;
+                    Snake.speed.x=0;
+                    Snake.speed.y=Snake.size;
                 }
                 break;
             case 65:
             case 37: //左边
-                if(currDirect!=2&&currDirect!=3){
-                    currDirect=2;
-                    speed.x=-snakeSize;
-                    speed.y=0;
+                if(Snake.direct!=2&&Snake.direct!=3){
+                    Snake.direct=2;
+                    Snake.speed.x=-Snake.size;
+                    Snake.speed.y=0;
                 }
                 break;
             case 68:
             case 39: //右边
-                if(currDirect!=2&&currDirect!=3){
-                    currDirect=3;
-                    speed.x=snakeSize;
-                    speed.y=0;
+                if(Snake.direct!=2&&Snake.direct!=3){
+                    Snake.direct=3;
+                    Snake.speed.x=Snake.size;
+                    Snake.speed.y=0;
                 }
                 break;
         }
+    },
+    newApple:function(){
+        Snake.apple.x=Math.pow(Math.random(),3)*1000;
+        Snake.apple.y=Math.pow(Math.random(),3)*1000;
+        Snake.body[Snake.body.length]=Snake.body[Snake.body.length-1];
+    },
+    eat:function(){
+        if(Math.sqrt(Math.pow(Snake.head.x-Snake.apple.x,2)+Math.pow(Snake.head.y-Snake.apple.y,2))<15)
+            return true;
+        else
+            return false;
+    },
+    run:function(){
+        for(var i=Snake.body.length-1;i>0;i--){
+            Snake.body[i].x=Snake.body[i-1].x;
+            Snake.body[i].y=Snake.body[i-1].y;
+        }
+        Snake.body[0].x+=Snake.speed.x;
+        Snake.body[0].y+=Snake.speed.y;
+    },
+    animate:function(){
+        Snake.draw();
+        Snake.run();
+        requestAnimationFrame(Snake.animate);
     }
-//上下移动时
-//上：0～Pi/2 下：0～－Pi/2
-function moveLeft(){
-
 }
-//上：
-function moveRight(){
+Snake.init();
 
-}
-//左右移动时
-function moveUp(){
-
-}
-function moveDown(){
-
-}
-
-function newApple(){
-    appleX=Math.pow(Math.random(),3)*1000;
-    appleY=Math.pow(Math.random(),3)*1000;
-    snake[snake.length]=snake[snake.length-1];
-}
-
-function eatApple(snakeX,snakeY,appleX,appleY,radius){
-    if(Math.sqrt(Math.pow(snakeX-appleX,2)+Math.pow(snakeY-appleY,2))<radius)
-        return true;
-    else
-        return false;
-}
-
-function runSnake(){
-    for(var i=snake.length-1;i>0;i--){
-        snake[i].x=snake[i-1].x;
-        snake[i].y=snake[i-1].y;
-    }
-    snake[0].x+=speed.x;
-    snake[0].y+=speed.y;
-}
-
-document.onkeydown = function (event) {
-    var event = event || window.event;
-    input(event.keyCode);
-}
-
-init();
-
-function run(){
-    draw();
-    runSnake();
-    requestAnimationFrame(run);
-}
-
-
-requestAnimationFrame(run);
 
 </script>
 
