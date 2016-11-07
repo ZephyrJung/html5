@@ -5,6 +5,22 @@
 <body>
 <canvas id="snakeCanvas" height="1000px" width="1000px">
 <script>
+window.requestAnimationFrame =
+    window.requestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    window.webkitRequestAnimationFrame ||
+    window.msRequestAnimationFrame ||(function() {
+    var lastTime = window.getTime();
+    var frame = 1000 / 60;
+    return function(func) {
+        var _id = setTimeout(function() {
+            lastTime = window.getTime();
+            func(lastTime);
+        }, Math.max(0, lastTime + frame - window.getTime()));
+        return _id;
+    };
+}());
+
 var canvas = document.getElementById('snakeCanvas');
 var x=100;
 var y=100;
@@ -31,7 +47,7 @@ function draw() {
     var ctx = canvas.getContext('2d');
     for(var i=0;i<snake.length;i++){
         ctx.beginPath();
-        ctx.lineTo(snake[i].x,snake[i].y)
+        ctx.lineTo(snake[i].x,snake[i].y);
         var radius = 15; // Arc radius
         var startAngle = 0; // Starting point on circle
         var endAngle = Math.PI*2; // End point on circle
@@ -50,6 +66,7 @@ function draw() {
     //     newApple();  
     // }
     // snake[snake.length]={x:,y:}
+  }
 }
 function input(keyCode) {
         switch (keyCode) {
@@ -125,17 +142,23 @@ function runSnake(){
     snake[0].x+=speed.x;
     snake[0].y+=speed.y;
 }
+
 document.onkeydown = function (event) {
     var event = event || window.event;
     input(event.keyCode);
-};
+}
+
+init();
+
 function run(){
     draw();
     runSnake();
-
+    requestAnimationFrame(run);
 }
-init();
-setInterval(run,50);
+
+
+requestAnimationFrame(run);
+
 </script>
 
 </body>
