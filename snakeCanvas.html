@@ -133,18 +133,19 @@ var Snake={
             Snake.body[i].x=Snake.body[i-1].x;
             Snake.body[i].y=Snake.body[i-1].y;
         }
+        Snake.body[1].x=Snake.head.x;
+        Snake.body[1].y=Snake.head.y;
         switch(Snake.direct){
             case 2:
                 Snake.head.angle+=Snake.angle;
-                console.log(Snake.head.angle);
                 break;
             case 3:
                 Snake.head.angle-=Snake.angle;
-                console.log(Snake.head.angle);
                 break;
         }
         Snake.head.x+=Snake.speed*Math.cos(Snake.head.angle);
         Snake.head.y+=Snake.speed*Math.sin(Snake.head.angle);
+        // Snake.direct=0;
     },
     animate:function(){
         Snake.draw();
