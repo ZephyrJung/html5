@@ -10,18 +10,21 @@
 var canvas = document.getElementById('snakeCanvas');
 
 var Snake={
-    head:{x:100,y:100},
+    head:{x:500,y:500,angle:0},
     direct:0,
+    angle:Math.PI/15,
     body:new Array(),
     size:15,
-    speed:{x:-15,y:0},
+    fps:1,//test
+    speed:15,
     apple:{
         x:Math.pow(Math.random(),3)*1000,
         y:Math.pow(Math.random(),3)*1000,
     },
     init:function(){
-        for(var i=0;i<6;i++){
-            Snake.body[i]={x:100+i*Snake.size,y:100}
+        Snake.body[0]={x:Snake.head.x,y:Snake.head.y}
+        for(var i=1;i<6;i++){
+            Snake.body[i]={x:500+i*Snake.size,y:500}
         }
         window.document.onkeydown = function (event) {
             var event = event || window.event;
@@ -48,7 +51,8 @@ var Snake={
         canvas.getContext('2d').clearRect(0,0,1000,1000);
         if (canvas.getContext){
             var ctx = canvas.getContext('2d');
-            for(var i=0;i<Snake.body.length;i++){
+            Snake.draw_head(ctx);
+            for(var i=1;i<Snake.body.length;i++){
                 ctx.beginPath();
                 ctx.lineTo(Snake.body[i].x,Snake.body[i].y);
                 var radius = 15; // Arc radius
@@ -66,39 +70,50 @@ var Snake={
             ctx.fill();
         }
     },
+    draw_head:function(ctx){
+        ctx.beginPath();
+        ctx.lineTo(Snake.head.x,Snake.head.y);
+        var radius = 15; // Arc radius
+        var startAngle = 0; // Starting point on circle
+        var endAngle = Math.PI*2; // End point on circle
+        ctx.arc(Snake.head.x, Snake.head.y, radius, startAngle, endAngle);
+        ctx.stroke();
+    },
     input:function(keyCode){
         switch (keyCode) {
             case 87:
             case 38: //上边
                 if(Snake.direct!=0&&Snake.direct!=1){
                     Snake.direct=0;
-                    Snake.speed.x=0;
-                    Snake.speed.y=-Snake.size;
+                    // Snake.speed.x=1*Math.cos(Math.PI/2);
+                    // Snake.speed.y=Snake.size*Math.sin(-Math.PI/2);
                 }
                 break;
             case 83:
             case 40: //下的
                 if(Snake.direct!=0&&Snake.direct!=1){
                     Snake.direct=1;
-                    Snake.speed.x=0;
-                    Snake.speed.y=Snake.size;
+                    // Snake.speed.x=1*Math.cos(Math.PI/2);
+                    // Snake.speed.y=Snake.size*Math.sin(Math.PI/2);
                 }
                 break;
             case 65:
             case 37: //左边
-                if(Snake.direct!=2&&Snake.direct!=3){
-                    Snake.direct=2;
-                    Snake.speed.x=-Snake.size;
-                    Snake.speed.y=0;
-                }
+                // if(Snake.direct!=2&&Snake.direct!=3){
+                //     Snake.direct=2;
+                //     Snake.speed.x=Snake.size*Math.cos(-Math.PI);
+                //     Snake.speed.y=1*Math.sin(Math.PI);
+                // }
+                Snake.direct=2;
                 break;
             case 68:
             case 39: //右边
-                if(Snake.direct!=2&&Snake.direct!=3){
-                    Snake.direct=3;
-                    Snake.speed.x=Snake.size;
-                    Snake.speed.y=0;
-                }
+                // if(Snake.direct!=2&&Snake.direct!=3){
+                //     Snake.direct=3;
+                //     Snake.speed.x=Snake.size*Math.cos(Math.PI);
+                //     Snake.speed.y=1*Math.sin(Math.PI);
+                // }
+                Snake.direct=3;
                 break;
         }
     },
@@ -118,12 +133,24 @@ var Snake={
             Snake.body[i].x=Snake.body[i-1].x;
             Snake.body[i].y=Snake.body[i-1].y;
         }
-        Snake.body[0].x+=Snake.speed.x;
-        Snake.body[0].y+=Snake.speed.y;
+        switch(Snake.direct){
+            case 2:
+                Snake.head.angle+=Snake.angle;
+                console.log(Snake.head.angle);
+                break;
+            case 3:
+                Snake.head.angle-=Snake.angle;
+                console.log(Snake.head.angle);
+                break;
+        }
+        Snake.head.x+=Snake.speed*Math.cos(Snake.head.angle);
+        Snake.head.y+=Snake.speed*Math.sin(Snake.head.angle);
     },
     animate:function(){
         Snake.draw();
-        Snake.run();
+        if(Snake.fps%1==0)
+            Snake.run();
+        Snake.fps++;
         requestAnimationFrame(Snake.animate);
     }
 }
