@@ -21,7 +21,8 @@
  <canvas id='canvas' width='400' height='400'>
       Canvas not supported
     </canvas>
-<script type="text/javascript" src="../utils/shapes.js"></script>
+<script type="text/javascript" src="../utils/circles.js"></script>
+<script type="text/javascript" src="../utils/lines.js"></script>
 <script>
 var canvas = document.getElementById('canvas'),
     context = canvas.getContext('2d'),
@@ -64,8 +65,8 @@ function drawHands() {
 
 function drawClock() {
   context.clearRect(0,0,canvas.width,canvas.height);
-  drawCircle(context,canvas.width/2,canvas.height/2,radius,false);
-  drawCircle(context,canvas.width/2,canvas.height/2,5,true);
+  drawCircle(context,canvas.width/2,canvas.height/2,radius,'black',false);
+  drawCircle(context,canvas.width/2,canvas.height/2,5,'black',true);
   drawHands();
   drawNumerals();
 }
