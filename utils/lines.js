@@ -1,22 +1,17 @@
 /*
+* :pushpin: 对context的设置应该放在方法外部
+* :question: 0.5的作用意味不明……
+*/
+
+/*
 * 绘制网格
 */
-function drawGrid(context, color, stepx, stepy) {
-   context.strokeStyle = color;
-   context.lineWidth = 0.5;
-
+function drawGrid(context, stepx, stepy) {
    for (var i = stepx + 0.5; i < context.canvas.width; i += stepx) {
-      context.beginPath();
-      context.moveTo(i, 0);
-      context.lineTo(i, context.canvas.height);
-      context.stroke();
+      drawVerticalLine(context,i);
    }
-
    for (var i = stepy + 0.5; i < context.canvas.height; i += stepy) {
-      context.beginPath();
-      context.moveTo(0, i);
-      context.lineTo(context.canvas.width, i);
-      context.stroke();
+      drawHorizontalLine(context,i);
    }
 }
 
@@ -35,5 +30,25 @@ function drawLineByPoints(context,startX, startY, endX, endY) {
 function drawLineByAngle(context,posX,posY,angle,length) {
    context.moveTo(posX, posX);
    context.lineTo(posX  + Math.cos(angle)*length, posX + Math.sin(angle)*length);
+   context.stroke();
+}
+
+/*
+* 画全长竖线
+*/
+function drawVerticalLine (context,x) {
+   context.beginPath();
+   context.moveTo(x+0.5,0);
+   context.lineTo(x+0.5,context.canvas.height);
+   context.stroke();
+}
+
+/*
+* 画全长横线
+*/
+function drawHorizontalLine (context,y) {
+   context.beginPath();
+   context.moveTo(0,y+0.5);
+   context.lineTo(context.canvas.width,y+0.5);
    context.stroke();
 }
