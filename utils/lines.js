@@ -52,3 +52,20 @@ function drawHorizontalLine (context,y) {
    context.lineTo(context.canvas.width,y+0.5);
    context.stroke();
 }
+
+/*
+* 绘制虚线
+*/
+function drawDashedLine(context, x1, y1, x2, y2, dashLength) {
+   dashLength = dashLength === undefined ? 5 : dashLength;
+   var deltaX = x2 - x1;
+   var deltaY = y2 - y1;
+   var numDashes = Math.floor(
+       Math.sqrt(deltaX * deltaX + deltaY * deltaY) / dashLength);
+   //这段看起来有点牛逼啊。。。
+   for (var i=0; i < numDashes; ++i) {
+      context[ i % 2 === 0 ? 'moveTo' : 'lineTo' ]
+         (x1 + (deltaX / numDashes) * i, y1 + (deltaY / numDashes) * i);
+   }
+   context.stroke();
+};
