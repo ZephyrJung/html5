@@ -1,39 +1,41 @@
 package main
 
-    import (
-        "golang.org/x/net/websocket"
-        "fmt"
-        "log"
-        "net/http"
-    )
+import (
+	"fmt"
+	"log"
 
-    func Echo(ws *websocket.Conn) {
-        var err error
+	"github.com/labstack/echo"
+	"github.com/labstack/echo/middleware"
+	"golang.org/x/net/websocket"
+)
 
-        for {
-            var reply string
+func hello(c echo.Context) error {
+	websocket.Handler(func(ws *websocket.Conn) {
+		defer ws.Close()
+		for {
+			// Write
+			err := websocket.Message.Send(ws, "Hello, Client!")
+			if err != nil {
+				log.Fatal(err)
+			}
 
-            if err = websocket.Message.Receive(ws, &reply); err != nil {
-                fmt.Println("Can't receive")
-                break
-            }
+			// Read
+			msg := ""
+			err = websocket.Message.Receive(ws, &msg)
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Printf("%s\n", msg)
+		}
+	}).ServeHTTP(c.Response(), c.Request())
+	return nil
+}
 
-            fmt.Println("Received back from client: " + reply)
-
-            msg := "Received:  " + reply
-            fmt.Println("Sending to client: " + msg)
-
-            if err = websocket.Message.Send(ws, msg); err != nil {
-                fmt.Println("Can't send")
-                break
-            }
-        }
-    }
-
-    func main() {
-        http.Handle("/", websocket.Handler(Echo))
-
-        if err := http.ListenAndServe(":1234", nil); err != nil {
-            log.Fatal("ListenAndServe:", err)
-        }
-    }
+func main() {
+	e := echo.New()
+	e.Use(middleware.Logger())
+	e.Use(middleware.Recover())
+	e.Static("/", "../public")
+	e.GET("/ws", hello)
+	e.Logger.Fatal(e.Start(":1323"))
+}
